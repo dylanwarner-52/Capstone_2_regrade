@@ -1,0 +1,155 @@
+3.	(2 pts) Following these successful sanity checks, setup a command to calculate the number of sequences in the input fasta file. Then, make a variable to hold this number. Hint: Look back at Lab#2 at an easy way to perform this calculation. 
+
+Here on number 3 I put 
+	number=`(grep -c '>' $1)`
+	echo "$number"
+
+This is incorrect because it only created one colomn and didn’t pipe them into a program that put them into colomn based on sequence number of lines.
+
+I should’ve added 
+	nseq=`grep ">" $1 | wc -l`
+	echo -e "\nThere are $nseq sequences in $1"
+	
+Right here she has echo -e which takes allows reading of the backslash characters.. This helps determines the number of sequences in the code by grabbing the lines with the > sympol and pipung them into a word count that only give the lines. Then echo e line tells it that there are a number of sequences in this colomn,
+
+
+
+4.	The script should use a command to create an empty file called GCcount.txt (2 pts). The script should print a header to this output file containing two columns: 1) “Sequence name” and 2) “GC Percentage” (3 pts).
+
+
+On number 4 I put:
+
+
+	touch GCcount.txt
+	Sequence=`(grep -v '>' $1)`
+	Name=`(grep '>' $1)`
+	echo $Sequence
+	echo $Name
+
+My idea here was to creat an empty file with a header so the output file to would 
+Have 2 colomns. This Didn’t work because the name of the header was not re directed into the GCcount3.txt first. 
+
+I should have done:
+
+ 
+
+	Touch GCcount.3.txt
+echo -e "Sequence_Name\tGC_Percentage" > GCcount.3.txt
+
+
+
+
+
+This command will open the GC test file using touch,
+Then echo -e will display the line and redirect it into GCcount.3.txt 
+
+
+
+	
+
+
+
+
+
+I didn’t get to these last parts because I gave up. 
+
+
+
+
+
+
+		names=(`grep ">" $1 | tr -d ">"`)
+seqs=(`grep -v ">" $1`)
+
+
+
+This works because she is assigning an array to all the lines that contain the “>” in file $1and is piping it into a translating command that deletes “>”…..
+The next line she assigns the seqs array to all the lines that contain “>” in file $1
+She sorted them because we need to run our gc calculator on the sequence array.
+
+5	Based on the number of sequences in the input file, setup a for loop to iterate as many times as you have sequences.
+
+
+
+
+
+#Initializing a loop for as many elements we have in our arrays, based on $nseq count from file
+for ((i=0; i<$nseq; i++))
+do
+
+
+Here we
+
+I=0---- where we start our for loop
+I<$nseq---- where the loop terminates (wherever I is less than nseq
+;---- spaces out our increments from our loop range
+I++----- is our incriments, means go one by one.
+
+
+We did this so that our loop would have a place to start and stop and would count one by one.
+
+
+In each iteration of the loop, the script should read in the sequence and calculate the number of sites that match a G or a C and the total number of sites in the sequence. This can be accomplished by storing each of these numbers in a variable.
+
+
+
+#printing sequences from array without new line characters and counting the occurances of G|C|Allcharacters, no matter the case
+
+G=`echo -n ${seqs[$i]}|grep -oi "G"|wc -l`
+C=`echo -n ${seqs[$i]}|grep -oi "C"|wc -l`
+T=`echo -n ${seqs[$i]}| wc -m`
+
+
+Here,
+
+G=`echo -n ---- Do not print the trailing newline character.
+ It calls the ${seqs[$i]} array and pipes it into the grep command
+Grep -oi ---- prints only the matching ones with G or C and ignores the case
+Wc -l ------- the previous info is then piped into this command which gives a word count only giving the lines.
+
+
+G=,C=T= ---- this means these characters will be represented by whats to follow and can be shorthanded later in the script.
+
+
+
+
+
+
+
+
+
+
+6	Using these two numbers, the script should calculate the percentage of sites containing a G or a C. Note: you should manually calculate this for a small test input file to make sure your script works correctly.
+
+#calculating the GC %
+GCp=`echo "scale=3; ((($G + $C)/$T)*100)"|bc`
+
+
+GCp---- means gc percentage
+
+Echo--- will state the product of the following equation
+
+Scale=3 ----- (had to google) this is the total number of decimal digits after the decimal point. It is used when using the bc command
+$G+$C/$T)*100----- gives percentage
+| bc------ the answer is piped into the bc command which basically translates the answer into a readable and accurate result.
+
+
+
+
+7	(12 pts) Lastly, in each iteration of the loop the script should print, to a file, the following output:
+a.	the sequence name from the fasta header
+b.	the calculated percentage GC in the total sequence
+
+
+
+#output into file
+echo -e "${names[$i]}\t$GCp" >> GCcount.3.txt
+	done
+
+
+echo -e-------- enables \, if \ is enabled it allows t to tab over and make a column 
+${names[$i]}\t$GCp------,$names calls the names array $i is the loop variable and is called so that the loop will run whats to come. \t spaces out the previous array and the GCp percentage
+
+>>-----   adds what was written previously into the the text file GCcount.3.txt
+
+
